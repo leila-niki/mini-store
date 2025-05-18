@@ -12,7 +12,11 @@ const Navbar = () => {
                         <Link to="/store">فروشگاه</Link>
                     </li>
                 </ul>
-                <div>سبد خرید</div>
+                <div>
+                    <Link to="/cart">
+                        <button>سبد خرید</button>
+                    </Link>
+                </div>
             </div>
         </div>
     )
