@@ -1,21 +1,24 @@
-import Button from "../../components/button/Button";
 import CartItem from "../../components/cartItem/CartItem";
+import PaymentDetails from "../../components/paymentDetails/PaymentDetails";
+import { useShoppingCartContext } from "../../context/ShoppingCartContext";
 
 const Cart = () => {
+    const {cartItems} = useShoppingCartContext();
+    if(!cartItems) {
+        return <div className="container mx-auto">Loading...</div>
+    };
+
     return(
         <div className="container mx-auto">
             <div>
-                <CartItem />
-                <CartItem />
-                <CartItem />
-                <CartItem />
+                {cartItems.length === 0 && <p className="text-center py-4">سبد خرید شما خالی است</p>}
+                {cartItems.length > 0 && cartItems?.map((item) => (
+                    <CartItem key={item.id} {...item} />
+                ))}
             </div>
-            <div className="text-right bg-gray-100 rounded p-6">
-                <p>قیمت کل: ۲۰۰۰ تومان</p>
-                <p>تخفیف: ۴۰۰ تومان</p>
-                <p>قیمت نهایی: ۱۶۰۰ تومان</p>
-            </div>
-            <Button className="mt-2" variant="success">ثبت سفارش</Button>
+            {cartItems.length > 0 &&  
+                <PaymentDetails cartItems={cartItems}/>
+            }
         </div>
     )
 }

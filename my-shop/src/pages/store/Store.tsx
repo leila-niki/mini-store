@@ -1,23 +1,27 @@
+import { useEffect, useState } from "react";
 import ProductsItem from "../../components/productItem/ProductsItem";
 import { Link } from "react-router-dom";
+import { getProducts } from "../../services/productApi";
+import type { ProductType } from "../../types/server";
 
 const Store = () => {
+    const [products, setProducts] = useState<ProductType[]>([]);
+
+    useEffect(() => {
+        getProducts()
+        .then((response) => setProducts(response))
+        .catch((error) => console.error("Error fetching products data:", error));
+    },[]);
+    
     return(
-        <div>
-            <h1 className="text-right mt-5">جدیدترین محصولات</h1>
-            <div className="container mx-auto grid grid-cols-4 gap-4">
-                <Link to={`/product/${1}`}>
-                    <ProductsItem />
-                </Link>
-                <Link to={`/product/${2}`}>
-                    <ProductsItem />
-                </Link>
-                <Link to={`/product/${3}`}>
-                    <ProductsItem />
-                </Link>
-                <Link to={`/product/${4}`}>
-                    <ProductsItem />
-                </Link>
+        <div className="container mx-auto my-4">
+            <h1 className="text-right my-5">جدیدترین محصولات</h1>
+            <div className="grid grid-cols-4 gap-4">
+                {products && products?.map((product) => (
+                    <Link to={`/product/${product?.id}`} key={product?.id}>
+                        <ProductsItem {...product}/>
+                    </Link>
+                ))}
             </div>
         </div>
     )

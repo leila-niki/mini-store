@@ -1,20 +1,41 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Button from "../button/Button";
+import { getProductById } from "../../services/productApi";
+import type { ProductType } from "../../types/server";
+import { useShoppingCartContext } from "../../context/ShoppingCartContext";
+import type { CartItemType } from "../../types/server";
 
-const CartItem = () => {
+type ProductItem  = ProductType;
+
+const CartItem = ({id, quantity}: CartItemType) => {
+    const {handleIncreaseFromProductQty, handleRemoveFromCart, handleDecreaseFromProductQty} = useShoppingCartContext()
+    const [product, setProduct] = useState<ProductItem>({} as ProductItem);
+
+    useEffect(() => {
+        getProductById(`${id}`)
+        .then((response) => setProduct(response))
+        .catch((error) => console.error("Error fetching product data:", error));
+    }, []);
+
+    const {title, image}: ProductItem = product;
+
     return (
-        <div className="flex flex-row-reverse mt-5 border-b border-slate-300 pb-2">
-            <img 
-                className="rounded w-28" 
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/500px-Image_created_with_a_mobile_phone.png" 
-                alt=""
-            />
-            <div className="mr-4">
-                <h3 className="text-right">عنوان محصول</h3>
+        <div className="flex flex-row-reverse items-center mt-5 border-b border-slate-300 pb-2">
+            <Link to={`/product/${id}`}>
+                <img 
+                    className="rounded w-24" 
+                    src={image}
+                    alt={title}
+                />
+            </Link>
+            <div className="mr-4 flex flex-col items-end">
+                <h3 className="text-right">{title}</h3>
                 <div className="mt-2">
-                    <Button variant="danger" className="mx-2">Remove</Button>
-                    <Button variant="primary" className="mx-2">+</Button>
-                    <span>{2}</span>
-                    <Button variant="primary" className="mx-2">-</Button>
+                    <Button variant="danger" className="mx-2" onClick={() => handleRemoveFromCart(id)}>حذف</Button>
+                    <Button variant="primary" className="mx-2" onClick={() => handleIncreaseFromProductQty(id)}>+</Button>
+                    <span>{quantity}</span>
+                    <Button variant="primary" className="mx-2" onClick={() => handleDecreaseFromProductQty(id)}>-</Button>
                 </div>
             </div>
         </div>
