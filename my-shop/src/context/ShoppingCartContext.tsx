@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useMemo } from "react";
 import { useLocalStorage } from "../hook/useLocalStorage";
 import { LoginProvider } from "./LoginContext";
 
@@ -70,11 +70,14 @@ export function ShoppingCartProvider({children}: ShoppingCartProviderType){
 
   const getCartQty = () => {
     return  cartItems.reduce((totalQty: number, item: CartItemType) => totalQty + item.quantity, 0);
-  }
+  };
+
+  const value = useMemo(() => ({ cartItems, handleAddToCart, handleRemoveFromCart, handleDecreaseFromProductQty, handleIncreaseFromProductQty, getProductQty, getCartQty }), [cartItems, handleAddToCart, handleRemoveFromCart, handleDecreaseFromProductQty, handleIncreaseFromProductQty, getProductQty, getCartQty]);
+
 
   return(
     <LoginProvider>
-      <ShoppingCartContext.Provider value={{cartItems, handleAddToCart, handleRemoveFromCart, handleDecreaseFromProductQty, handleIncreaseFromProductQty, getProductQty, getCartQty}}>
+      <ShoppingCartContext.Provider value={value}>
         {children}
       </ShoppingCartContext.Provider>
     </LoginProvider>

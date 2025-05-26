@@ -1,31 +1,48 @@
-import { useParams } from "react-router-dom";
-import Button from "../../components/button/Button";
+import { Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getProductById } from "../../services/productApi";
 import type { ProductType } from "../../types/server";
-import { useShoppingCartContext } from "../../context/ShoppingCartContext";
-
-
-type ProductItem = ProductType;
-
+import ProductQty from "./ProductQty";
 
 const Product = () => {
     const {id} = useParams<{id: string}>();
-    const [productData, setProductData] = useState<ProductItem>();
-    const {handleAddToCart,handleIncreaseFromProductQty, handleDecreaseFromProductQty, getProductQty, handleRemoveFromCart} = useShoppingCartContext();
+    const [productData, setProductData] = useState<ProductType | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    
+
+    if (!id || isNaN(Number(id))) {
+        return  <Navigate to="/store" replace/>
+    }
 
     useEffect(() => {
         getProductById(id as string)
-        .then((response) => setProductData(response))
-        .catch((error) => console.error("Error fetching product data:", error));
+        .then((response) => {
+            console.log("response")
+            setProductData(response);
+            setIsLoading(false);
+        })
+        .catch((error) => {
+            setError(error?.response?.data)
+            setIsLoading(false);
+        });
 
     },[id]);
 
-    if(!productData) {
+    if(error === "Not Found" && productData === null) {
+        return <div className="container mx-auto text-center my-4">همچین محصولی یافت نشد!</div>
+    }
+
+    if(isLoading) {
         return <div className="container mx-auto">Loading...</div>
     };
 
-    const {title, price, description, image}: ProductItem = productData;
+    if(!productData) {
+        return <div className="container mx-auto text-center my-4">محصولی یافت نشد!</div>
+    }
+
+
+    const {title, price, description, image}: ProductType = productData;
 
     return(
         <div className="container mx-auto">
@@ -39,15 +56,7 @@ const Product = () => {
                 </div>
                 <div className="col-span-2 p-4 bg-slate-200">
                     <img className="rounded h-[180px] mx-auto" src={image} alt={title}/>
-                    {getProductQty(Number(id as string)) ? 
-                        <div className="flex items-center flex-row-reverse mt-4">
-                            <Button className="my-2 w-10 py-1 cursor-pointer" variant="primary" onClick={() => handleIncreaseFromProductQty(Number(id as string))}>+</Button>
-                            <span className="block px-4 text-center">{getProductQty(Number(id as string))}</span>
-                            <Button className="my-2 w-10 py-1 cursor-pointer" variant="primary" onClick={() => handleDecreaseFromProductQty(Number(id as string))}>-</Button>
-                            <Button className="mr-auto" variant="danger" onClick={() => handleRemoveFromCart(Number(id))}>حذف</Button>
-                        </div>
-                        : <Button className="my-2 w-full py-3 cursor-pointer" variant="primary" onClick={() => handleAddToCart(Number(id as string), price)}>افزودن به سبد خرید</Button>
-                    }
+                    <ProductQty price={price}/>
                 </div> 
             </div>
         </div>

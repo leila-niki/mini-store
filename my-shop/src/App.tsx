@@ -6,7 +6,9 @@ import Product from "./pages/product/Product"
 import Cart from "./pages/cart/Cart";
 import { ShoppingCartProvider } from "./context/ShoppingCartContext"
 import PrivateRoute from "./components/privateRoute/PrivateRoute"
-import Login from "./pages/login/Login"
+import Login from "./pages/login/Login";
+import NotFound from "./pages/notFound/NotFound"
+
 
 function App() {
 
@@ -20,7 +22,8 @@ function App() {
           <Route path="/login" element={<Login />}/>
           <Route element={<PrivateRoute />}>
             <Route path="/cart" element={<Cart />}/>
-          </Route>
+        </Route>
+        <Route path="*" element={<NotFound />}/>
         </Routes>
       </Layout>
     </ShoppingCartProvider>

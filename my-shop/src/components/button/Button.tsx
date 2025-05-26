@@ -1,6 +1,7 @@
 import type { ComponentProps } from "react";
+import { checkVariant } from "../../utils/variantStyles";
+import type { TVariant } from "../../utils/variantStyles";
 
-type TVariant = "primary" | "secondry" | "danger" | "warning" | "success"
 
 type TButton = ComponentProps<"button"> & {
     variant?: TVariant
@@ -15,17 +16,3 @@ const Button = ({children,variant,style,className, ...rest}: TButton) => {
 export default Button;
 
 
-function checkVariant(variant? : TVariant){
-    switch (variant) {
-        case "primary":
-            return {backgroundColor: "#008bff" , color:"white"};
-        case "secondry":
-            return {backgroundColor: "gray" , color:"black"};
-        case "danger":
-            return {backgroundColor: "red" , color:"white"};
-        case "warning":
-            return {backgroundColor: "yellow" , color:"white"};
-        case "success":
-            return {backgroundColor: "green" , color:"white"};
-    }
-}
